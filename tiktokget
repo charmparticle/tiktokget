@@ -1,0 +1,101 @@
+#!/usr/bin/env python3
+####
+from latest_user_agents import get_random_user_agent
+from selenium import webdriver
+from time import sleep
+from os import system, path, makedirs, chdir
+import sys
+import signal
+
+baseurl = "https://www.tiktok.com/"
+
+def signal_handler(signum, frame):
+  try:
+    driver.quit()
+  except Exception:
+    pass
+
+  sys.exit(1)
+
+signal.signal(signal.SIGINT, signal_handler)
+signal.signal(signal.SIGTERM, signal_handler)
+
+if len(sys.argv) == 2:
+    username=sys.argv[1]
+else:
+    print("please supply a username.")
+    exit(1)
+
+if '@' in username:
+    pass
+else:
+    username = '@' + username
+
+opts = webdriver.firefox.options.Options()
+opts.headless = True
+#binary = webdriver.firefox.firefox_binary.FirefoxBinary('/opt/mozilla/vanilla/firefox/firefox')
+driver = webdriver.Firefox(options=opts)
+driver.set_window_size(1080, 3096)
+
+url="{}{}".format(baseurl, username)
+n = 0
+urls=[]
+#useragent = get_random_user_agent()
+#try:
+driver.get(url)
+driver.maximize_window()
+#print(driver.page_source)
+keeplooking = True
+vidurls = driver.find_elements_by_xpath("//div[contains(@class, 'DivWrapper')]/a")
+while keeplooking == True:
+    prev_vidurls = len(vidurls)
+    for vidurl in vidurls:
+        h = vidurl.get_attribute('href')
+        if h in urls:
+            pass
+        else:
+            urls.append(h)
+
+    #endless = driver.find_element_by_xpath("//style[contains(@data-emotion, 'DivBottomContainer')]")
+    #driver.execute_script("arguments[0].scrollIntoView(true);", endless)
+    driver.execute_script("window.scrollBy(0,document.body.scrollHeight);")
+    sleep(3)
+    vidurls = driver.find_elements_by_xpath("//div[contains(@class, 'DivWrapper')]/a")
+    for vidurl in vidurls:
+        h = vidurl.get_attribute('href')
+        if h in urls:
+            pass
+        else:
+            urls.append(h)
+    #driver.execute_script("arguments[0].scrollIntoView(true);", vidurls[1])
+    print("Found " + str(len(vidurls)) + " videos.", end="\r")
+    if prev_vidurls == len(vidurls):
+        keeplooking = False
+        n = len(vidurls)
+print()
+print("Downloading...")
+dirname = username[1:] #remove the leading '@'
+makedirs(dirname, exist_ok=True)
+chdir(dirname)
+for url in urls:
+    driver.get(url)
+    sleep(5)
+    title = driver.find_element_by_xpath("//span[contains(@class, 'SpanText')]").text
+    title = title.replace('/', '\u2044') #replace forward slash with division symbol
+    p = '{0:03d}'.format(n)
+    title = p + '_' + title + '.mp4'
+    print(title, end="\r")
+    title_len = len(title)
+    if path.exists(title):
+        pass
+    else:
+        system('yt-dlp -q --no-warnings -o "{}" "{}"'.format(title, url))
+    print(' ' * title_len, end="\r")
+    n = n - 1
+#except Exception as e:
+#    print("An exception has occurred:")
+#    print(str(e))
+#    pass
+#
+driver.quit()
+driver.quit()
