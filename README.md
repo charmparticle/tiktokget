@@ -11,11 +11,15 @@ You'll need:
  
  Simply install python 3.x using your package manager or the standard distribution, then install tiktokget with:
  
- pip3 install tiktokget
+     pip3 install tiktokget
+     
+ or in Windows:
+ 
+     py -m pip install tiktokget
  
  Invocation is simple:
  
- tiktokget username
+     tiktokget username
  
  will download every video by username, into a folder, also named username.
  The videos will be titled their title in tiktok, prefixed by their sequence number.
