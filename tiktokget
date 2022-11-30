@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
 ####
-from latest_user_agents import get_random_user_agent
 from selenium import webdriver
+import requests
 from time import sleep
 from os import system, path, makedirs, chdir
 import sys
 import signal
 
 baseurl = "https://www.tiktok.com/"
+watermark = False
+headers = {}
 
 def signal_handler(signum, frame):
   try:
@@ -20,10 +22,19 @@ def signal_handler(signum, frame):
 signal.signal(signal.SIGINT, signal_handler)
 signal.signal(signal.SIGTERM, signal_handler)
 
-if len(sys.argv) == 2:
-    username=sys.argv[1]
+if 1 < len(sys.argv) <= 3:
+    for i in range(len(sys.argv)):
+        if sys.argv[i] == '-w':
+            watermark=True
+        else:
+            username=sys.argv[i]
 else:
-    print("please supply a username.")
+    print("""
+Usage: tiktokget username
+         or
+       tiktokget -w username
+         to download with a watermark
+""")
     exit(1)
 
 if '@' in username:
@@ -36,17 +47,18 @@ opts.headless = True
 #binary = webdriver.firefox.firefox_binary.FirefoxBinary('/opt/mozilla/vanilla/firefox/firefox')
 driver = webdriver.Firefox(options=opts)
 driver.set_window_size(1080, 3096)
-
+uagent = driver.execute_script("return navigator.userAgent;")
+headers['User-Agent'] = uagent
 url="{}{}".format(baseurl, username)
 n = 0
 urls=[]
-#useragent = get_random_user_agent()
 #try:
 driver.get(url)
 driver.maximize_window()
 #print(driver.page_source)
 keeplooking = True
 vidurls = driver.find_elements_by_xpath("//div[contains(@class, 'DivWrapper')]/a")
+
 while keeplooking == True:
     prev_vidurls = len(vidurls)
     for vidurl in vidurls:
@@ -72,11 +84,13 @@ while keeplooking == True:
     if prev_vidurls == len(vidurls):
         keeplooking = False
         n = len(vidurls)
-print()
+
 print("Downloading...")
+
 dirname = username[1:] #remove the leading '@'
 makedirs(dirname, exist_ok=True)
 chdir(dirname)
+
 for url in urls:
     driver.get(url)
     sleep(5)
@@ -84,18 +98,19 @@ for url in urls:
     title = title.replace('/', '\u2044') #replace forward slash with division symbol
     p = '{0:03d}'.format(n)
     title = p + '_' + title + '.mp4'
-    print(title, end="\r")
+    print(title)
     title_len = len(title)
     if path.exists(title):
         pass
     else:
-        system('yt-dlp -q --no-warnings -o "{}" "{}"'.format(title, url))
-    print(' ' * title_len, end="\r")
+        if watermark:
+            vid = driver.find_element_by_xpath("//video")
+            url = vid.get_attribute("src")
+            video = requests.get(url, headers=headers)
+            with open(title, 'wb') as v:
+                v.write(video.content)
+        else:
+            system('yt-dlp -q --no-warnings -o "{}" "{}"'.format(title, url))
     n = n - 1
-#except Exception as e:
-#    print("An exception has occurred:")
-#    print(str(e))
-#    pass
-#
 driver.quit()
 driver.quit()

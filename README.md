@@ -21,6 +21,16 @@ You'll need:
  
      tiktokget username
  
- will download every video by username, into a folder, also named username.
+ will download every video (without watermarks) by username, into a folder, also named username.
  The videos will be titled their title in tiktok, prefixed by their sequence number.
+
+ To download with watermarks, use:
+
+     tiktokget -w username
+
+or
+
+    tiktokget username -w
+
+Whichever one floats your boat.
  
