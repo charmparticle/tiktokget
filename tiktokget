@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 ####
 from selenium import webdriver
+from selenium.webdriver.common.by import By
 import requests
 from time import sleep
 from os import system, path, makedirs, chdir
@@ -57,7 +58,7 @@ driver.get(url)
 driver.maximize_window()
 #print(driver.page_source)
 keeplooking = True
-vidurls = driver.find_elements_by_xpath("//div[contains(@class, 'DivWrapper')]/a")
+vidurls = driver.find_elements(By.XPATH,"//div[contains(@class, 'DivWrapper')]/a")
 
 while keeplooking == True:
     prev_vidurls = len(vidurls)
@@ -72,7 +73,7 @@ while keeplooking == True:
     #driver.execute_script("arguments[0].scrollIntoView(true);", endless)
     driver.execute_script("window.scrollBy(0,document.body.scrollHeight);")
     sleep(3)
-    vidurls = driver.find_elements_by_xpath("//div[contains(@class, 'DivWrapper')]/a")
+    vidurls = driver.find_elements(By.XPATH,"//div[contains(@class, 'DivWrapper')]/a")
     for vidurl in vidurls:
         h = vidurl.get_attribute('href')
         if h in urls:
@@ -94,7 +95,7 @@ chdir(dirname)
 for url in urls:
     driver.get(url)
     sleep(5)
-    title = driver.find_element_by_xpath("//span[contains(@class, 'SpanText')]").text
+    title = driver.find_element(By.XPATH,"//span[contains(@class, 'SpanText')]").text
     title = title.replace('/', '\u2044') #replace forward slash with division symbol
     p = '{0:03d}'.format(n)
     title = p + '_' + title + '.mp4'
@@ -104,7 +105,7 @@ for url in urls:
         pass
     else:
         if watermark:
-            vid = driver.find_element_by_xpath("//video")
+            vid = driver.find_element(By.XPATH,"//video")
             url = vid.get_attribute("src")
             video = requests.get(url, headers=headers)
             with open(title, 'wb') as v:
