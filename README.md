@@ -1,5 +1,5 @@
 # tiktokget
-A tiktok downloader. Downloads all tiktok videos for a username.
+A tiktok downloader for linux. Downloads all tiktok videos for a username.
 
 **Prerequisites**
 
@@ -12,10 +12,6 @@ You'll need:
  Simply install python 3.x using your package manager or the standard distribution, then install tiktokget with:
  
      pip3 install tiktokget
-     
- or in Windows:
- 
-     py -m pip install tiktokget
  
  Invocation is simple:
  
