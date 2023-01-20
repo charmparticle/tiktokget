@@ -32,9 +32,16 @@ if 1 < len(sys.argv) <= 3:
 else:
     print("""
 Usage: tiktokget username
-         or
-       tiktokget -w username
-         to download with a watermark
+
+       -w         download with a watermark
+       -i         download yt-dlp info.json
+       -s         download all subtitles
+       -t         download thumbnail
+       -at        download all thumbnails
+       -o         download original API json files (can get messy)
+       -d         write description to a file
+       -p         print URLs instead of downloading them
+       -v         make yt-dlp verbose
 """)
     exit(1)
 
