@@ -148,25 +148,62 @@ makedirs(dirname, exist_ok=True)
 chdir(dirname)
 
 for url in urls:
-    driver.get(url)
-    sleep(5)
-    title = driver.find_element(By.XPATH,"//span[contains(@class, 'SpanText')]").text
-    title = title.replace('/', '\u2044') #replace forward slash with division symbol
-    p = '{0:03d}'.format(n)
-    title = p + '_' + title + '.mp4'
-    print(title)
-    title_len = len(title)
-    if path.exists(title):
-        pass
-    else:
-        if watermark:
-            vid = driver.find_element(By.XPATH,"//video")
-            url = vid.get_attribute("src")
-            video = requests.get(url, headers=headers)
-            with open(title, 'wb') as v:
-                v.write(video.content)
+    if print:
+        print url
+       
+    else: 
+        driver.get(url)
+        sleep(5)
+        title = driver.find_element(By.XPATH,"//span[contains(@class, 'SpanText')]").text
+        title = title.replace('/', '\u2044') #replace forward slash with division symbol
+        p = '{0:03d}'.format(n)
+        title = p + '_' + title + '.mp4'
+        print(title)
+        title_len = len(title)
+        if path.exists(title):
+            pass
         else:
-            system('yt-dlp -q --no-warnings -o "{}" "{}"'.format(title, url))
+            if watermark:
+                vid = driver.find_element(By.XPATH,"//video")
+                url = vid.get_attribute("src")
+                video = requests.get(url, headers=headers)
+                with open(title, 'wb') as v:
+                    v.write(video.content)
+            else:
+                if verbose:
+                  system('yt-dlp -v -o "{}" "{}"'.format(title, url))
+                else:
+                  system('yt-dlp -q --no-warnings -o "{}" "{}"'.format(title, url))
+        if infojson
+          if verbose:
+                  system('yt-dlp -v --skip-download --write-info-json -o "{}" "{}"'.format(title, url))
+                else:
+                  system('yt-dlp -q --no-warnings --skip-download --write-info-json -o "{}" "{}"'.format(title, url))
+        if subs
+          if verbose:
+                  system('yt-dlp -v --skip-download --write-subs --sub-langs all -o "{}" "{}"'.format(title, url))
+                else:
+                  system('yt-dlp -q --no-warnings --skip-download --write-subs --sub-langs all -o "{}" "{}"'.format(title, url))
+        if thumbs
+          if verbose:
+                  system('yt-dlp -v --skip-download --write-thumbnail -o "{}" "{}"'.format(title, url))
+                else:
+                  system('yt-dlp -q --no-warnings --skip-download --write-thumbnail -o "{}" "{}"'.format(title, url))
+        if athumbs
+            if verbose:
+                    system('yt-dlp -v --skip-download --write-all-thumbnails -o "{}" "{}"'.format(title, url))
+                  else:
+                    system('yt-dlp -q --no-warnings --skip-download --write-all-thumbnails  )
+        if desc
+          if verbose:
+                  system('yt-dlp -v --skip-download --write-description )
+                else:
+                  system('yt-dlp -q --no-warnings --skip-download --write-description)
+        if dump
+          if verbose:
+                  system('yt-dlp -v --skip-download --write-pages -o title)
+                else:
+                  system('yt-dlp -q --no-warnings --skip-download --write-pages -o title)
     n = n - 1
 driver.quit()
 driver.quit()
