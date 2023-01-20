@@ -29,6 +29,54 @@ if 1 < len(sys.argv) <= 3:
             watermark=True
         else:
             username=sys.argv[i]
+if 1 < len(sys.argv) <= 3:
+    for i in range(len(sys.argv)):
+        if sys.argv[i] == '-i':
+            infojson=True
+        else:
+            infojson=False
+if 1 < len(sys.argv) <= 3:
+    for i in range(len(sys.argv)):
+        if sys.argv[i] == '-s':
+            subs=True
+        else:
+            subs=False
+if 1 < len(sys.argv) <= 3:
+    for i in range(len(sys.argv)):
+        if sys.argv[i] == '-t':
+            thumbs=True
+        else:
+            thumbs=False
+if 1 < len(sys.argv) <= 3:
+    for i in range(len(sys.argv)):
+        if sys.argv[i] == '-at':
+            athumbs=True
+        else:
+            athumbs=False
+if 1 < len(sys.argv) <= 3:
+    for i in range(len(sys.argv)):
+        if sys.argv[i] == '-o':
+            dump=True
+        else:
+            dump=False
+if 1 < len(sys.argv) <= 3:
+    for i in range(len(sys.argv)):
+        if sys.argv[i] == '-d':
+            desc=True
+        else:
+            desc=False
+if 1 < len(sys.argv) <= 3:
+    for i in range(len(sys.argv)):
+        if sys.argv[i] == '-p':
+            print=True
+        else:
+            print=False
+if 1 < len(sys.argv) <= 3:
+    for i in range(len(sys.argv)):
+        if sys.argv[i] == '-v':
+            verbose=True
+        else:
+            verbose=False
 else:
     print("""
 Usage: tiktokget username
