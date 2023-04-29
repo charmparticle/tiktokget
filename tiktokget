@@ -149,7 +149,7 @@ chdir(dirname)
 
 for url in urls:
     if print:
-        print url
+        print(url)
        
     else: 
         driver.get(url)
