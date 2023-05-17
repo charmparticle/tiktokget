@@ -149,9 +149,9 @@ chdir(dirname)
 
 for url in urls:
     if print:
-        print url
-       
-    else: 
+        print(url)
+
+    else:
         driver.get(url)
         sleep(5)
         title = driver.find_element(By.XPATH,"//span[contains(@class, 'SpanText')]").text
@@ -174,36 +174,36 @@ for url in urls:
                   system('yt-dlp -v -o "{}" "{}"'.format(title, url))
                 else:
                   system('yt-dlp -q --no-warnings -o "{}" "{}"'.format(title, url))
-        if infojson
+        if infojson:
           if verbose:
                   system('yt-dlp -v --skip-download --write-info-json -o "{}" "{}"'.format(title, url))
-                else:
+          else:
                   system('yt-dlp -q --no-warnings --skip-download --write-info-json -o "{}" "{}"'.format(title, url))
-        if subs
+        if subs:
           if verbose:
                   system('yt-dlp -v --skip-download --write-subs --sub-langs all -o "{}" "{}"'.format(title, url))
-                else:
+          else:
                   system('yt-dlp -q --no-warnings --skip-download --write-subs --sub-langs all -o "{}" "{}"'.format(title, url))
-        if thumbs
+        if thumbs:
           if verbose:
                   system('yt-dlp -v --skip-download --write-thumbnail -o "{}" "{}"'.format(title, url))
-                else:
+          else:
                   system('yt-dlp -q --no-warnings --skip-download --write-thumbnail -o "{}" "{}"'.format(title, url))
-        if athumbs
+        if athumbs:
             if verbose:
                     system('yt-dlp -v --skip-download --write-all-thumbnails -o "{}" "{}"'.format(title, url))
-                  else:
-                    system('yt-dlp -q --no-warnings --skip-download --write-all-thumbnails  )
-        if desc
+            else:
+                    system('yt-dlp -q --no-warnings --skip-download --write-all-thumbnails')
+        if desc:
           if verbose:
-                  system('yt-dlp -v --skip-download --write-description )
-                else:
-                  system('yt-dlp -q --no-warnings --skip-download --write-description)
-        if dump
+                  system('yt-dlp -v --skip-download --write-description')
+          else:
+                  system('yt-dlp -q --no-warnings --skip-download --write-description')
+        if dump:
           if verbose:
-                  system('yt-dlp -v --skip-download --write-pages -o title)
-                else:
-                  system('yt-dlp -q --no-warnings --skip-download --write-pages -o title)
+                  system('yt-dlp -v --skip-download --write-pages -o title')
+          else:
+                  system('yt-dlp -q --no-warnings --skip-download --write-pages -o title')
     n = n - 1
 driver.quit()
 driver.quit()
