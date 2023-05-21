@@ -5,11 +5,14 @@ from selenium.webdriver.common.by import By
 import requests
 from time import sleep
 from os import system, path, makedirs, chdir
+from sarge import get_stdout
 import sys
 import signal
 
+allthethings = True
 baseurl = "https://www.tiktok.com/"
 watermark = False
+headless = True
 headers = {}
 
 def signal_handler(signum, frame):
@@ -23,135 +26,108 @@ def signal_handler(signum, frame):
 signal.signal(signal.SIGINT, signal_handler)
 signal.signal(signal.SIGTERM, signal_handler)
 
-if 1 < len(sys.argv) <= 3:
-    for i in range(len(sys.argv)):
+def show_help(stat):
+    print("""
+Usage: 
+       tiktokget <args> username
+       or
+       tiktokget <args> url
+       some args:
+       [-l url] to download a url, one-off.
+       [-f] to disable headless, to help with download failures 
+       or
+       [-w] to download with a watermark
+
+       url should be in quotes.
+
+       examples:
+       download all of a usernames videos (the default):
+       tiktokget someuser 
+       download all of a usernames videos, but open the browser window:
+       tiktokget -f someuser
+""")
+    exit(stat)
+i=1
+if 1 < len(sys.argv) <= 5:
+    while i < len(sys.argv):
         if sys.argv[i] == '-w':
             watermark=True
+        if sys.argv[i] == '-h' or sys.argv[i] == '--help':
+            show_help(0)
+        if sys.argv[i] == '-f':
+            headless=False
+        if sys.argv[i] == '-l':
+            allthethings = False
+            try:
+                if 'https://www.tiktok.com' in sys.argv[i+1]:
+                    url=sys.argv[i+1]
+                    i=i+1
+                else:
+                    show_help(1)
+            except IndexError:
+                show_help(1)
         else:
             username=sys.argv[i]
-if 1 < len(sys.argv) <= 3:
-    for i in range(len(sys.argv)):
-        if sys.argv[i] == '-i':
-            infojson=True
-        else:
-            infojson=False
-if 1 < len(sys.argv) <= 3:
-    for i in range(len(sys.argv)):
-        if sys.argv[i] == '-s':
-            subs=True
-        else:
-            subs=False
-if 1 < len(sys.argv) <= 3:
-    for i in range(len(sys.argv)):
-        if sys.argv[i] == '-t':
-            thumbs=True
-        else:
-            thumbs=False
-if 1 < len(sys.argv) <= 3:
-    for i in range(len(sys.argv)):
-        if sys.argv[i] == '-at':
-            athumbs=True
-        else:
-            athumbs=False
-if 1 < len(sys.argv) <= 3:
-    for i in range(len(sys.argv)):
-        if sys.argv[i] == '-o':
-            dump=True
-        else:
-            dump=False
-if 1 < len(sys.argv) <= 3:
-    for i in range(len(sys.argv)):
-        if sys.argv[i] == '-d':
-            desc=True
-        else:
-            desc=False
-if 1 < len(sys.argv) <= 3:
-    for i in range(len(sys.argv)):
-        if sys.argv[i] == '-p':
-            print=True
-        else:
-            print=False
-if 1 < len(sys.argv) <= 3:
-    for i in range(len(sys.argv)):
-        if sys.argv[i] == '-v':
-            verbose=True
-        else:
-            verbose=False
+        i=i+1
 else:
-    print("""
-Usage: tiktokget username
+    show_help(1)
 
-       -w         download with a watermark
-       -i         download yt-dlp info.json
-       -s         download all subtitles
-       -t         download thumbnail
-       -at        download all thumbnails
-       -o         download original API json files (can get messy)
-       -d         write description to a file
-       -p         print URLs instead of downloading them
-       -v         make yt-dlp verbose
-""")
-    exit(1)
-
-if '@' in username:
-    pass
-else:
-    username = '@' + username
+if allthethings:
+    if '@' in username:
+        pass
+    else:
+        username = '@' + username
 
 opts = webdriver.firefox.options.Options()
-opts.headless = True
-#binary = webdriver.firefox.firefox_binary.FirefoxBinary('/opt/mozilla/vanilla/firefox/firefox')
+if not headless:
+    opts.headless = False
+else:
+    opts.headless = True
+binary = webdriver.firefox.firefox_binary.FirefoxBinary(get_stdout('which firefox'))
 driver = webdriver.Firefox(options=opts)
 driver.set_window_size(1080, 3096)
 uagent = driver.execute_script("return navigator.userAgent;")
 headers['User-Agent'] = uagent
-url="{}{}".format(baseurl, username)
-n = 0
-urls=[]
-#try:
-driver.get(url)
-driver.maximize_window()
-#print(driver.page_source)
-keeplooking = True
-vidurls = driver.find_elements(By.XPATH,"//div[contains(@class, 'DivWrapper')]/a")
 
-while keeplooking == True:
-    prev_vidurls = len(vidurls)
-    for vidurl in vidurls:
-        h = vidurl.get_attribute('href')
-        if h in urls:
-            pass
-        else:
-            urls.append(h)
-
-    #endless = driver.find_element_by_xpath("//style[contains(@data-emotion, 'DivBottomContainer')]")
-    #driver.execute_script("arguments[0].scrollIntoView(true);", endless)
-    driver.execute_script("window.scrollBy(0,document.body.scrollHeight);")
-    sleep(3)
+if allthethings:
+    url="{}{}".format(baseurl, username)
+    n = 0
+    urls=[]
+    driver.get(url)
+    driver.maximize_window()
+    keeplooking = True
     vidurls = driver.find_elements(By.XPATH,"//div[contains(@class, 'DivWrapper')]/a")
-    for vidurl in vidurls:
-        h = vidurl.get_attribute('href')
-        if h in urls:
-            pass
-        else:
-            urls.append(h)
-    #driver.execute_script("arguments[0].scrollIntoView(true);", vidurls[1])
-    print("Found " + str(len(vidurls)) + " videos.", end="\r")
-    if prev_vidurls == len(vidurls):
-        keeplooking = False
-        n = len(vidurls)
-
-print("Downloading...")
-
-dirname = username[1:] #remove the leading '@'
-makedirs(dirname, exist_ok=True)
-chdir(dirname)
-
-for url in urls:
-    if print:
-        print url
-       
-    else: 
+    
+    while keeplooking == True:
+        prev_vidurls = len(vidurls)
+        for vidurl in vidurls:
+            h = vidurl.get_attribute('href')
+            if h in urls:
+                pass
+            else:
+                urls.append(h)
+    
+        driver.execute_script("window.scrollBy(0,document.body.scrollHeight);")
+        sleep(3)
+        vidurls = driver.find_elements(By.XPATH,"//div[contains(@class, 'DivWrapper')]/a")
+        for vidurl in vidurls:
+            h = vidurl.get_attribute('href')
+            if h in urls:
+                pass
+            else:
+                urls.append(h)
+        print("Found " + str(len(vidurls)) + " videos.", end="\r")
+        if prev_vidurls == len(vidurls):
+            keeplooking = False
+            n = len(vidurls)
+    
+    print("Downloading...")
+    
+    dirname = username[1:] #remove the leading '@'
+    makedirs(dirname, exist_ok=True)
+    chdir(dirname)
+    
+    for url in urls:
         driver.get(url)
         sleep(5)
         title = driver.find_element(By.XPATH,"//span[contains(@class, 'SpanText')]").text
@@ -170,40 +146,27 @@ for url in urls:
                 with open(title, 'wb') as v:
                     v.write(video.content)
             else:
-                if verbose:
-                  system('yt-dlp -v -o "{}" "{}"'.format(title, url))
-                else:
-                  system('yt-dlp -q --no-warnings -o "{}" "{}"'.format(title, url))
-        if infojson
-          if verbose:
-                  system('yt-dlp -v --skip-download --write-info-json -o "{}" "{}"'.format(title, url))
-                else:
-                  system('yt-dlp -q --no-warnings --skip-download --write-info-json -o "{}" "{}"'.format(title, url))
-        if subs
-          if verbose:
-                  system('yt-dlp -v --skip-download --write-subs --sub-langs all -o "{}" "{}"'.format(title, url))
-                else:
-                  system('yt-dlp -q --no-warnings --skip-download --write-subs --sub-langs all -o "{}" "{}"'.format(title, url))
-        if thumbs
-          if verbose:
-                  system('yt-dlp -v --skip-download --write-thumbnail -o "{}" "{}"'.format(title, url))
-                else:
-                  system('yt-dlp -q --no-warnings --skip-download --write-thumbnail -o "{}" "{}"'.format(title, url))
-        if athumbs
-            if verbose:
-                    system('yt-dlp -v --skip-download --write-all-thumbnails -o "{}" "{}"'.format(title, url))
-                  else:
-                    system('yt-dlp -q --no-warnings --skip-download --write-all-thumbnails  )
-        if desc
-          if verbose:
-                  system('yt-dlp -v --skip-download --write-description )
-                else:
-                  system('yt-dlp -q --no-warnings --skip-download --write-description)
-        if dump
-          if verbose:
-                  system('yt-dlp -v --skip-download --write-pages -o title)
-                else:
-                  system('yt-dlp -q --no-warnings --skip-download --write-pages -o title)
-    n = n - 1
-driver.quit()
+                system('yt-dlp -q --no-warnings -o "{}" "{}"'.format(title, url))
+        n = n - 1
+else:
+    driver.get(url)
+    sleep(5)
+    title = driver.find_element(By.XPATH,"//span[contains(@class, 'SpanText')]").text
+    title = title.replace('/', '\u2044') #replace forward slash with division symbol
+    title = title + '.mp4'
+    print(title)
+    title_len = len(title)
+    if path.exists(title):
+        pass
+    else:
+        print("Downloading...")
+        if watermark:
+            vid = driver.find_element(By.XPATH,"//video")
+            url = vid.get_attribute("src")
+            video = requests.get(url, headers=headers)
+            with open(title, 'wb') as v:
+                v.write(video.content)
+        else:
+            system('yt-dlp -q --no-warnings -o "{}" "{}"'.format(title, url))
+
 driver.quit()

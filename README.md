@@ -31,3 +31,8 @@ or
 
 Whichever one floats your boat.
  
+to get help with usage, simply invoke tiktokget without any arguments, ie:
+
+    tiktokget
+
+I recently added -f, which runs selenium in GUI mode, so you can interact with the browser. This should help with failed downloads.
