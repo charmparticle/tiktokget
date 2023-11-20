@@ -1,3 +1,5 @@
+tiktokget hasn't been working for some time now, as tiktok has updated their web page to block selenium with captchas and other such nonsense. Thus, I'm reverting to a basic shellscript, with simpler functionality.
+
 # tiktokget
 A tiktok downloader bash script for Linux (and probably all other POSIX-compatible systems). Downloads tiktok videos using yt-dlp
 
