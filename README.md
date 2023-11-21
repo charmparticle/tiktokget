@@ -14,6 +14,7 @@ I have replaced my python script with a simpler bash script. This script can be 
 
 1. place tiktok videos you want to download in a plain text file, with 1 url per line
 2. invoke tiktokget: `./tiktokget thefile`, where thefile is the hypothetical name of the text file you created.
+3. alternatively, supply tiktokget directly with a url: `./tiktokget tiktokurl`
 
 bear in mind, since this is a bash script, you have to be mindful of spaces. Don't put spaces in the filename, or at least quote the filename if you do that.
 

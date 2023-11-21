@@ -27,7 +27,12 @@ dl(){
     yt-dlp -o "$title" "$url"
 }
 
-cat $1 | while read url
-do
-    dl "$url"
-done
+if [[ -f $1 ]]
+then
+    cat $1 | while read url
+    do
+        dl "$url"
+    done
+else
+    dl $1
+fi
