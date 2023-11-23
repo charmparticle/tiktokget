@@ -1,4 +1,13 @@
 #!/bin/bash
+show_help(){
+    echo "usage:
+
+$0 https://tiktok.com/t/someurl
+
+or
+
+$0 somefile_with_1_url_per_line"
+}
 gen-title(){
     url=$1
     #clean up that title. By default, it's a mess of hashtags and unicode.
@@ -34,5 +43,10 @@ then
         dl "$url"
     done
 else
-    dl $1
+    if [[ "$1" == "" ]]
+    then
+        show_help
+    else
+        dl $1
+    fi
 fi
