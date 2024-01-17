@@ -18,3 +18,5 @@ I have replaced my python script with a simpler bash script. This script can be 
 
 bear in mind, since this is a bash script, you have to be mindful of spaces. Don't put spaces in the filename, or at least quote the filename if you do that.
 
+For getting the url of a tiktok video, I would recommend installing kdeconnect on your phone and your computer, and linking them. Then you can click "share", and click "copy link", and then paste in your computer, easy peasy. 
+
